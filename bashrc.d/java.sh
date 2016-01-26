@@ -30,4 +30,4 @@ function __jmt_cmd_java() {
     esac
 }
 
-jm java 8
+__jmt_cmd_java 1.8
