@@ -1,7 +1,7 @@
 # PATH
 
 function __jm_cmd_path_reload() {
-    local path_dir=$CONFIG_HOME/path
+    local path_dir=$JMT_HOME/path
     local path_prefix
     local file
 

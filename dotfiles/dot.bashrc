@@ -1,8 +1,8 @@
 # bash personal configuration
 # File to be sourced in .bashrc
 
-export CONFIG_HOME=~/config
-export CONFIG_LOCAL_HOME=$CONFIG_HOME/local
+export JMT_HOME=~/jmtools
+export JMT_LOCAL_HOME=$JMT_HOME/local
 
 
 function jm() {
@@ -71,9 +71,9 @@ function __jm_source_shell_config_files() {
     local local_dir
     local local_dir_name
 
-    __jm_source_shell_config_file "${CONFIG_HOME}"
-    for local_dir_name in $(ls $CONFIG_LOCAL_HOME); do
-        local_dir="${CONFIG_LOCAL_HOME}/${local_dir_name}"
+    __jm_source_shell_config_file "${JMT_HOME}"
+    for local_dir_name in $(ls $JMT_LOCAL_HOME); do
+        local_dir="${JMT_LOCAL_HOME}/${local_dir_name}"
         if [[ -d $local_dir ]]; then
             __jm_source_shell_config_file "$local_dir"
         fi
