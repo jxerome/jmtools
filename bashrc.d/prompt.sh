@@ -3,7 +3,7 @@
 
 export PROMPT_COMMAND=bash_prompt
 
-function prompt_color() {
+function __jmt_prompt_color() {
     # colors
     local -r black='\e[0;30m'
     local -r red='\e[0;31m'
@@ -21,24 +21,24 @@ function prompt_color() {
 }
 
 function __jmt_cmd_prompt_basic() {
-    export PS1="\n$(prompt_color cyan)\\u $(prompt_color green)\\w$(prompt_color reset)\n\\\$ "
+    export PS1="\n$(__jmt_prompt_color cyan)\\u $(__jmt_prompt_color green)\\w$(__jmt_prompt_color reset)\n\\\$ "
     unset PROMPT_COMMAND
 }
 
 function __jmt_cmd_prompt_git() {
-    export PROMPT_COMMAND=prompt_build_git_prompt
+    export PROMPT_COMMAND=__jmt_prompt_build_git_prompt
 }
 
-function prompt_add_to_prompt_if {
+function __jmt_prompt_add_to_prompt_if {
     local flag=$1
     local text=$2
     local color=$3
     if [[ -n $flag ]]; then
-        prompt+="$(prompt_color $color)${text}  "
+        prompt+="$(__jmt_prompt_color $color)${text}  "
     fi
 }
 
-function prompt_get_current_action () {
+function __jmt_prompt_get_current_action () {
     local info="$(git rev-parse --git-dir 2>/dev/null)"
     if [ -n "$info" ]; then
         local action=""
@@ -76,7 +76,7 @@ function prompt_get_current_action () {
     fi
 }
 
-function git_prompt_is_a_git_repo() {
+function __jmt_prompt_is_a_git_repo() {
     local enabled=`git config --get shell.prompt.enabled`
     if [[ ${enabled} == false ]]; then return 1; fi
 
@@ -85,7 +85,7 @@ function git_prompt_is_a_git_repo() {
 }
 
 
-function prompt_build_git_prompt() {
+function __jmt_prompt_build_git_prompt() {
     #                ?           ᄉ    →
     local symbol_is_a_git_repo=''
     local symbol_has_stashes=''
@@ -108,7 +108,7 @@ function prompt_build_git_prompt() {
     local just_init
     local current_action
 
-    if git_prompt_is_a_git_repo; then
+    if __jmt_prompt_is_a_git_repo; then
         local current_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
         local number_of_logs="$(git log --pretty=oneline -n1 2> /dev/null | wc -l)"
         if [[ $number_of_logs -eq 0 ]]; then
@@ -140,17 +140,17 @@ function prompt_build_git_prompt() {
             local number_of_stashes="$(git stash list -n1 2> /dev/null | wc -l)"
             if [[ $number_of_stashes -gt 0 ]]; then local has_stashes=true; fi
 
-            local current_action="$(prompt_get_current_action)"
+            local current_action="$(__jmt_prompt_get_current_action)"
         fi
 
-        prompt=" $(prompt_color purple)${symbol_is_a_git_repo}  "
+        prompt=" $(__jmt_prompt_color purple)${symbol_is_a_git_repo}  "
 
         # where
         if [[ -z $just_init ]]; then
             if [[ $detached == true ]]; then
                 prompt+=" ${symbol_detached} ${current_commit_hash:0:7} "
             elif [[ -z $upstream ]]; then
-                prompt+="${current_branch} $(prompt_color cyan)${symbol_not_tracked_branch}  "
+                prompt+="${current_branch} $(__jmt_prompt_color cyan)${symbol_not_tracked_branch}  "
             else
                 local type_of_upstream
                 if [[ $push_will_rebase == true ]]; then
@@ -158,24 +158,24 @@ function prompt_build_git_prompt() {
                 else
                     type_of_upstream="$symbol_merge_tracking_branch"
                 fi
-                prompt+="${current_branch} $(prompt_color cyan)${type_of_upstream} ${upstream/\/${current_branch}/}  "
+                prompt+="${current_branch} $(__jmt_prompt_color cyan)${type_of_upstream} ${upstream/\/${current_branch}/}  "
 
                 if [[ $commits_behind -gt 0 || $commits_ahead -gt 0 ]]; then
-                    prompt+="$(prompt_color red)${symbol_commits_behind} ${commits_behind} $(prompt_color green)${symbol_commits_ahead} ${commits_ahead}  "
+                    prompt+="$(__jmt_prompt_color red)${symbol_commits_behind} ${commits_behind} $(__jmt_prompt_color green)${symbol_commits_ahead} ${commits_ahead}  "
                 fi
             fi
 
-            prompt_add_to_prompt_if "$has_stashes" $symbol_has_stashes yellow
-            prompt_add_to_prompt_if "$has_modifications" $symbol_has_modifications red
-            prompt_add_to_prompt_if "$has_adds" $symbol_has_adds red
-            prompt_add_to_prompt_if "$has_deletions" $symbol_has_deletions red
-            prompt_add_to_prompt_if "$has_index_changed" $symbol_has_cached_modifications green
-            prompt_add_to_prompt_if "$tag_at_current_commit" "${symbol_is_on_a_tag} ${tag_at_current_commit} " purple
+            __jmt_prompt_add_to_prompt_if "$has_stashes" $symbol_has_stashes yellow
+            __jmt_prompt_add_to_prompt_if "$has_modifications" $symbol_has_modifications red
+            __jmt_prompt_add_to_prompt_if "$has_adds" $symbol_has_adds red
+            __jmt_prompt_add_to_prompt_if "$has_deletions" $symbol_has_deletions red
+            __jmt_prompt_add_to_prompt_if "$has_index_changed" $symbol_has_cached_modifications green
+            __jmt_prompt_add_to_prompt_if "$tag_at_current_commit" "${symbol_is_on_a_tag} ${tag_at_current_commit} " purple
         fi
-        prompt_add_to_prompt_if "$current_action" "${symbol_action} ${current_action}" red
+        __jmt_prompt_add_to_prompt_if "$current_action" "${symbol_action} ${current_action}" red
     fi
 
-    export PS1="\n$(prompt_color cyan)\\u $(prompt_color green)\\w ${prompt}$(prompt_color reset)\n\\\$ "
+    export PS1="\n$(__jmt_prompt_color cyan)\\u $(__jmt_prompt_color green)\\w ${prompt}$(__jmt_prompt_color reset)\n\\\$ "
 }
 
 __jmt_cmd_prompt_git
