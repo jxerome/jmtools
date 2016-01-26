@@ -1,6 +1,6 @@
 # JAVA
 
-function __jm_cmd_java() {
+function __jmt_cmd_java() {
     local version=$1
     local java_home=/usr/libexec/java_home
 

@@ -20,12 +20,12 @@ function prompt_color() {
     fi
 }
 
-function __jm_cmd_prompt_basic() {
+function __jmt_cmd_prompt_basic() {
     export PS1="\n$(prompt_color cyan)\\u $(prompt_color green)\\w$(prompt_color reset)\n\\\$ "
     unset PROMPT_COMMAND
 }
 
-function __jm_cmd_prompt_git() {
+function __jmt_cmd_prompt_git() {
     export PROMPT_COMMAND=prompt_build_git_prompt
 }
 
@@ -178,4 +178,4 @@ function prompt_build_git_prompt() {
     export PS1="\n$(prompt_color cyan)\\u $(prompt_color green)\\w ${prompt}$(prompt_color reset)\n\\\$ "
 }
 
-__jm_cmd_prompt_git
+__jmt_cmd_prompt_git
