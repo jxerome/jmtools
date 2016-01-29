@@ -24,7 +24,7 @@ versionArgument.add_argument("-4", "-r", "--random", action = "store_true", help
 versionArgument.add_argument("-3", "--md5", nargs = 2, metavar = ('namespace', 'name'), help = "MD5 Hash UUID (type 3)")
 versionArgument.add_argument("-5", "--sha1", nargs = 2, metavar = ('namespace', 'name'), help = "SHA1 Hash UUID (type 5)")
 
-analyzeCommand = commands.add_parser("analyze", help = "Analyze an UUID")
+analyzeCommand = commands.add_parser("info", help = "Print info about UUIDs")
 analyzeCommand.add_argument("uuid", nargs ="*", help="UUID to analyze")
 analyzeCommand.add_argument("-i", "--input",
         type = argparse.FileType('r'),
@@ -68,8 +68,8 @@ def create_uuid():
     else:
         create_timestamp_uuid(args.number)
 
-def analyze_uuid(u, output):
-    'Analyze on UUID'
+def info_uuid(u, output):
+    'Print info about one UUID'
     try:
         uid = uuid.UUID(u)
         if uid.version == 1:
@@ -80,24 +80,23 @@ def analyze_uuid(u, output):
             print("{}: random".format(uid), file=output)
         elif uid.version == 5:
             print("{}: sha1".format(uid), file=output)
-
     except:
         print("{}: invalid".format(u), file=output)
 
-def analyze_uuids():
-    'Analyze UUIDS'
+def info_uuids():
+    'Print info of UUIDS'
     with args.output as output:
         if args.uuid:
             for uid in args.uuid:
-                analyze_uuid(uid, output)
+                info_uuid(uid, output)
         else:
             with args.input as input:
                 for line in input:
                     uid = line.strip()
                     if uid:
-                        analyze_uuid(uid, output)
+                        info_uuid(uid, output)
 
 {
     'create': create_uuid,
-    'analyze': analyze_uuids
+    'info': info_uuids
 }[args.command]()
