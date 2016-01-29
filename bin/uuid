@@ -2,6 +2,14 @@
 
 import argparse
 import uuid
+import sys
+
+KNOWN_NAMESPACES = {
+    'dns': uuid.NAMESPACE_DNS,
+    'url': uuid.NAMESPACE_URL,
+    'oid': uuid.NAMESPACE_OID,
+    'x500': uuid.NAMESPACE_X500
+}
 
 parser = argparse.ArgumentParser(description="UUID utility tool")
 parser.add_argument("-v", "--version", action="version", version="%(prog)s 1.0", help="Print version")
@@ -16,8 +24,18 @@ versionArgument.add_argument("-4", "-r", "--random", action = "store_true", help
 versionArgument.add_argument("-3", "--md5", nargs = 2, metavar = ('namespace', 'name'), help = "MD5 Hash UUID (type 3)")
 versionArgument.add_argument("-5", "--sha1", nargs = 2, metavar = ('namespace', 'name'), help = "SHA1 Hash UUID (type 5)")
 
-args = parser.parse_args()
+analyzeCommand = commands.add_parser("analyze", help = "Analyze an UUID")
+analyzeCommand.add_argument("uuid", nargs ="*", help="UUID to analyze")
+analyzeCommand.add_argument("-i", "--input",
+        type = argparse.FileType('r'),
+        default = sys.stdin,
+        help = "Input file")
+analyzeCommand.add_argument("-o", "--output",
+        type = argparse.FileType('w'),
+        default = sys.stdout,
+        help = "Output file")
 
+args = parser.parse_args()
 
 def create_uuid():
     'Create de new UUID'
@@ -31,12 +49,7 @@ def create_uuid():
             print(uuid.uuid4())
 
     def create_hash_uuid(namespace, name, method):
-        ns = {
-            'dns': uuid.NAMESPACE_DNS,
-            'url': uuid.NAMESPACE_URL,
-            'oid': uuid.NAMESPACE_OID,
-            'x500': uuid.NAMESPACE_X500
-        }.get(namespace.lower())
+        ns = KNOWN_NAMESPACES.get(namespace.lower())
         if not ns:
             try:
                 ns = uuid.UUID(namespace)
@@ -55,5 +68,36 @@ def create_uuid():
     else:
         create_timestamp_uuid(args.number)
 
-if args.command == 'create':
-    create_uuid()
+def analyze_uuid(u, output):
+    'Analyze on UUID'
+    try:
+        uid = uuid.UUID(u)
+        if uid.version == 1:
+            print("{}: timestamp - {} - {}".format(uid, uid.time, hex(uid.node)), file=output)
+        elif uid.version == 3:
+            print("{}: md5".format(uid), file=output)
+        elif uid.version == 4:
+            print("{}: random".format(uid), file=output)
+        elif uid.version == 5:
+            print("{}: sha1".format(uid), file=output)
+
+    except:
+        print("{}: invalid".format(u), file=output)
+
+def analyze_uuids():
+    'Analyze UUIDS'
+    with args.output as output:
+        if args.uuid:
+            for uid in args.uuid:
+                analyze_uuid(uid, output)
+        else:
+            with args.input as input:
+                for line in input:
+                    uid = line.strip()
+                    if uid:
+                        analyze_uuid(uid, output)
+
+{
+    'create': create_uuid,
+    'analyze': analyze_uuids
+}[args.command]()
