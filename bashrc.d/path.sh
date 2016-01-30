@@ -1,7 +1,7 @@
 # PATH
 
 function __jmt_add_to_path() {
-    if [[ -d "$HOME/bin" ]]; then
+    if [[ -d $1 ]]; then
         if [[ -z ${path_prefix} ]]; then
             path_prefix=$1
         else
