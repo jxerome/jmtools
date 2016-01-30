@@ -85,12 +85,14 @@ function __jmt_source_shell_config_files() {
     local local_dir_name
 
     __jmt_source_shell_config_file "${JMT_HOME}"
-    for local_dir_name in $(ls $JMT_LOCAL_HOME); do
-        local_dir="${JMT_LOCAL_HOME}/${local_dir_name}"
-        if [[ -d $local_dir ]]; then
-            __jmt_source_shell_config_file "$local_dir"
-        fi
-    done
+    if [[ -d $JMT_LOCAL_HOME ]]; then
+        for local_dir_name in $(ls $JMT_LOCAL_HOME); do
+            local_dir="${JMT_LOCAL_HOME}/${local_dir_name}"
+            if [[ -d $local_dir ]]; then
+                __jmt_source_shell_config_file "$local_dir"
+            fi
+        done
+    fi
 }
 
 __jmt_source_shell_config_files
