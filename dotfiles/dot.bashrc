@@ -73,26 +73,18 @@ function __jmt_source_shell_config_file() {
     local bashrc_d_dir=$1/bashrc.d
     local file
 
-    for file in $(ls $bashrc_d_dir/*.sh $bashrc_d_dir/*.bash 2>/dev/null); do
-        if [[ -x $file ]]; then
-            . $file
-        fi
-    done
-}
-
-function __jmt_source_shell_config_files() {
-    local local_dir
-    local local_dir_name
-
-    __jmt_source_shell_config_file "${JMT_HOME}"
-    if [[ -d $JMT_LOCAL_HOME ]]; then
-        for local_dir_name in $(ls $JMT_LOCAL_HOME); do
-            local_dir="${JMT_LOCAL_HOME}/${local_dir_name}"
-            if [[ -d $local_dir ]]; then
-                __jmt_source_shell_config_file "$local_dir"
+    if [[ -d $bashrc_d_dir ]]; then
+        for file in $(ls $bashrc_d_dir/*.sh $bashrc_d_dir/*.bash 2>/dev/null); do
+            if [[ -x $file ]]; then
+                . $file
             fi
         done
     fi
+}
+
+function __jmt_source_shell_config_files() {
+    __jmt_source_shell_config_file "${JMT_HOME}"
+    __jmt_source_shell_config_file "${JMT_HOME}/local"
 }
 
 __jmt_source_shell_config_files
