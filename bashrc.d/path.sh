@@ -53,7 +53,14 @@ function __jmt_cmd_path_add() {
             link_name=$(basename $(dirname $absolute_target))
         fi
     fi
-    local link=$path_dir/$link_name
+    local link="$path_dir/$link_name"
+
+    if [[ ! -e "$path_dir" ]]; then
+        mkdir -p "$path_dir"
+    elif [[ ! -d "$path_dir" ]]; then
+        echo "Path directory $path_dir is not a directory" >&2
+        return 1
+    fi
 
     if [[ ! -e $link ]]; then
         ln -s $absolute_target $link
