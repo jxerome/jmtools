@@ -96,7 +96,13 @@ def info_uuids():
                     if uid:
                         info_uuid(uid, output)
 
-{
+cmd = {
     'create': create_uuid,
     'info': info_uuids
-}[args.command]()
+}.get(args.command)
+
+if cmd:
+    cmd()
+else:
+    parser.print_usage()
+    print("uuid: error: missing command", file=sys.stderr)
