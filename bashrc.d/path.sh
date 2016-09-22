@@ -11,14 +11,24 @@ function __jmt_append_to_path() {
 }
 
 function __jmt_cmd_path_list() {
+    local file=$1
     local path_dir=$JMT_HOME/path
 
-    (for file in $(ls $path_dir 2>/dev/null); do
+    if [[ -n $file ]]; then
         local link=$path_dir/$file
         if [[ -L $link && -d $link ]]; then
-            echo "${file};$(jm readdirlink $link)"
+            jm readdirlink $link
+        else
+            echo "No cassandra path found" >&2
         fi
-    done) | column -t -s ';'
+    else
+        (for file in $(ls $path_dir 2>/dev/null); do
+            local link=$path_dir/$file
+            if [[ -L $link && -d $link ]]; then
+                echo "${file};$(jm readdirlink $link)"
+            fi
+        done) | column -t -s ';'
+    fi
 }
 
 function __jmt_cmd_path_add() {
