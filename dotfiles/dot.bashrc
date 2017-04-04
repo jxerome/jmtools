@@ -14,11 +14,16 @@ function jm() {
     if [[ ( -n $else ) && ( -n $what ) ]] && cmd=$(__jmt_find_function_or_command "${what}_${else}"); then
         shift 2
         $debug "$cmd" "$@"
-    elif [[ -n $what ]] && cmd=$(__jmt_find_function_or_command "${what}"); then
-        shift
-        $debug "$cmd" "$@"
+    elif [[ -n $what ]]; then
+        if cmd=$(__jmt_find_function_or_command "${what}"); then
+            shift
+            $debug "$cmd" "$@"
+        else
+            echo "jm: Invalid command $*" >&2
+            return 1
+        fi
     else
-        echo "Invalid command jm $*" >&2
+        echo "Missing at least one argument" >&2
         return 1
     fi
 }
