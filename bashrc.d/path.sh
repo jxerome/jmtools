@@ -1,5 +1,9 @@
 # PATH
 
+function __jmt_path_dir() {
+    echo "$(__jmt_config)/path"
+}
+
 function __jmt_append_to_path() {
     if [[ -d $1 ]]; then
         if [[ -z ${path_prefix} ]]; then
@@ -12,7 +16,7 @@ function __jmt_append_to_path() {
 
 function __jmt_cmd_path_list() {
     local file=$1
-    local path_dir=$JMT_HOME/path
+    local path_dir="$(__jmt_path_dir)"
 
     if [[ -n $file ]]; then
         local link=$path_dir/$file
@@ -32,7 +36,7 @@ function __jmt_cmd_path_list() {
 }
 
 function __jmt_cmd_path_add() {
-    local path_dir=$JMT_HOME/path
+    local path_dir="$(__jmt_path_dir)"
     local force
 
     if [[ $1 == -f ]]; then
@@ -91,7 +95,7 @@ function __jmt_cmd_path_add() {
 
 function __jmt_cmd_path_rm() {
     local link_name=$1
-    local link=$JMT_HOME/path/$link_name
+    local link="$(__jmt_path_dir)/$link_name"
 
     if [[ -z $link_name ]]; then
         echo "USAGE: jm path rm <link_name>" >&2
@@ -113,7 +117,7 @@ function __jmt_cmd_path_rm() {
 
 
 function __jmt_cmd_path_reload() {
-    local path_dir=$JMT_HOME/path
+    local path_dir="$(__jmt_path_dir)"
     local path_prefix
     local file
 
@@ -122,10 +126,10 @@ function __jmt_cmd_path_reload() {
     fi
 
     __jmt_append_to_path "$HOME/bin"
-    __jmt_append_to_path "$JMT_HOME/bin"
+    __jmt_append_to_path "$(__jmt_home)/bin"
 
     for file in $(ls $path_dir 2>/dev/null); do
-        local link=$path_dir/$file
+        local link="$path_dir/$file"
         if [[ -L $link && -d $link ]]; then
             __jmt_append_to_path "$(jm readdirlink $link)"
         fi

@@ -1,10 +1,6 @@
 # bash personal configuration
 # File to be sourced in .bashrc
 
-export JMT_HOME=~/jmtools
-export JMT_LOCAL_HOME=$JMT_HOME/local
-
-
 function jm() {
     local debug
     if [[ $1 == '--debug' || $1 == '-d' ]]; then
@@ -30,6 +26,14 @@ function jm() {
         echo "Missing argument" >&2
         return 1
     fi
+}
+
+function __jmt_home() {
+    echo "${XDG_DATA_HOME:-$HOME/.local/share}/jmtools"
+}
+
+function __jmt_config() {
+    echo "${XDG_DATA_HOME:-$HOME/.config}/jmtools"
 }
 
 function __jmt_debug() {
@@ -83,8 +87,8 @@ function __jmt_source_shell_config_file() {
 }
 
 function __jmt_source_shell_config_files() {
-    __jmt_source_shell_config_file "${JMT_HOME}"
-    __jmt_source_shell_config_file "${JMT_HOME}/local"
+    __jmt_source_shell_config_file "$(__jmt_home)"
+    __jmt_source_shell_config_file "$(__jmt_config)"
 }
 
 __jmt_source_shell_config_files
