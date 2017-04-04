@@ -1,6 +1,12 @@
 # bash personal configuration
 # File to be sourced in .bashrc
 
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
 function jm() {
     local debug
     if [[ $1 == '--debug' || $1 == '-d' ]]; then
