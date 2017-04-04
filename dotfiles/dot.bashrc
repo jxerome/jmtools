@@ -11,19 +11,14 @@ function jm() {
     local what=$1
     local else=$2
     local cmd
-    if [[ -n $what ]]; then
-        if cmd=$(__jmt_find_function_or_command "${what}"); then
-            shift
-            $debug "$cmd" "$@"
-        elif [[ -n $else ]] && cmd=$(__jmt_find_function_or_command "${what}_${else}"); then
-            shift 2
-            $debug "$cmd" "$@"
-        else
-            echo "Invalid command jm $*" >&2
-            return 1
-        fi
+    if [[ ( -n $else ) && ( -n $what ) ]] && cmd=$(__jmt_find_function_or_command "${what}_${else}"); then
+        shift 2
+        $debug "$cmd" "$@"
+    elif [[ -n $what ]] && cmd=$(__jmt_find_function_or_command "${what}"); then
+        shift
+        $debug "$cmd" "$@"
     else
-        echo "Missing argument" >&2
+        echo "Invalid command jm $*" >&2
         return 1
     fi
 }
