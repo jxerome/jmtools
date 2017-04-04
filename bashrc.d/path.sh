@@ -14,6 +14,12 @@ function __jmt_append_to_path() {
     fi
 }
 
+function __jmt_cmd_path() {
+    echo "USAGE jm path list" >&2
+    echo "      jm path add [ -f ] <target> [ <link_name> ]" >&2
+    echo "      jm path rm <link_name> )" >&2
+}
+
 function __jmt_cmd_path_list() {
     local file=$1
     local path_dir="$(__jmt_path_dir)"
