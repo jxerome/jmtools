@@ -34,4 +34,33 @@ if [[ $(uname) == "Darwin" ]]; then
 
     __jmt_cmd_java 1.8
 
+elif which update-java-alternatives 2>&1 >/dev/null; then
+
+    function __jmt_cmd_java() {
+        local version=$1
+        local updt_java=update-java-alternatives
+
+        case "$version" in
+            -l)
+                $updt_java -l
+                ;;
+            8|9)
+                version="java-${version}-oracle"
+                if $updt_java -l | cut -d " " -f 1 | grep "${version}" 2>&1 >/dev/null ; then
+                    sudo $updt_java -s "${version}"
+                else
+                    echo "Il n'y a pas de JDK en version $version" >&2
+                    return 1
+                fi
+                ;;
+            *)
+                if $updt_java -l | cut -d " " -f 1 | grep "${version}" 2>&1 >/dev/null ; then
+                    sudo $updt_java -s "${version}"
+                else
+                    echo "Il n'y a pas de JDK en version $version" >&2
+                    return 1
+                fi
+                ;;
+        esac
+    }
 fi
