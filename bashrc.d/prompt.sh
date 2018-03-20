@@ -8,10 +8,12 @@ function __jmt_prompt_color() {
     local -r black='\e[0;30m'
     local -r red='\e[0;31m'
     local -r green='\e[0;32m'
+    local -r darkgreen='\e[38;5;22m'
     local -r yellow='\e[0;33m'
     local -r blue='\e[0;34m'
     local -r purple='\e[0;35m'
     local -r cyan='\e[0;36m'
+    local -r orange='\e[38;5;202m'
     local -r white='\e[0;37m'
     local -r reset='\e[0m'
 
@@ -86,22 +88,20 @@ function __jmt_prompt_is_a_git_repo() {
 
 
 function __jmt_prompt_build_git_prompt() {
-    #                ?           ᄉ    →
-    local symbol_is_a_git_repo=''
-    local symbol_has_stashes=''
-    local symbol_has_modifications=''
-    local symbol_has_adds=''
-    local symbol_has_deletions=''
-    local symbol_has_cached_modifications=''
-    local symbol_is_on_a_tag=''                #   
-    local symbol_detached=''
-    local symbol_has_diverged=''               #   
-    local symbol_not_tracked_branch=''
-    local symbol_rebase_tracking_branch=''     #   
-    local symbol_merge_tracking_branch=''      #  
-    local symbol_action=''
-    local symbol_commits_ahead=''
-    local symbol_commits_behind=''
+    local symbol_is_a_git_repo='[git]'
+    local symbol_has_stashes='/'
+    local symbol_has_modifications='!'
+    local symbol_has_adds='+'
+    local symbol_has_deletions='-'
+    local symbol_has_cached_modifications='!?'
+    local symbol_is_on_a_tag='#'
+    local symbol_detached='#'
+    local symbol_has_diverged='div'
+    local symbol_not_tracked_branch='(local)'
+    local symbol_tracking_branch='⇌'
+    local symbol_action='a'
+    local symbol_commits_ahead='⬆︎'
+    local symbol_commits_behind='⬇︎'
 
     local prompt
     local current_commit_hash
@@ -130,11 +130,6 @@ function __jmt_prompt_build_git_prompt() {
                 local commits_diff="$(git log --pretty=oneline --topo-order --left-right ${current_commit_hash}...${upstream} 2> /dev/null)"
                 local commits_ahead=$(\grep -c "^<" <<< "$commits_diff")
                 local commits_behind=$(\grep -c "^>" <<< "$commits_diff")
-
-                local push_will_rebase=$(git config --get branch.${current_branch}.rebase 2> /dev/null)
-                if [[ -z $push_will_rebase ]]; then
-                    push_will_rebase=$(git config --get pull.rebase 2> /dev/null)
-                fi
             fi
 
             local number_of_stashes="$(git stash list -n1 2> /dev/null | wc -l)"
@@ -143,39 +138,33 @@ function __jmt_prompt_build_git_prompt() {
             local current_action="$(__jmt_prompt_get_current_action)"
         fi
 
-        prompt=" $(__jmt_prompt_color purple)${symbol_is_a_git_repo}  "
+        prompt="$(__jmt_prompt_color reset)${symbol_is_a_git_repo} "
 
         # where
         if [[ -z $just_init ]]; then
             if [[ $detached == true ]]; then
                 prompt+=" ${symbol_detached} ${current_commit_hash:0:7} "
             elif [[ -z $upstream ]]; then
-                prompt+="${current_branch} $(__jmt_prompt_color cyan)${symbol_not_tracked_branch}  "
+                prompt+="$(__jmt_prompt_color purple)${current_branch} $(__jmt_prompt_color cyan)${symbol_not_tracked_branch}  "
             else
-                local type_of_upstream
-                if [[ $push_will_rebase == true ]]; then
-                    type_of_upstream="$symbol_rebase_tracking_branch"
-                else
-                    type_of_upstream="$symbol_merge_tracking_branch"
-                fi
-                prompt+="${current_branch} $(__jmt_prompt_color cyan)${type_of_upstream} ${upstream/\/${current_branch}/}  "
+                prompt+="$(__jmt_prompt_color purple)${current_branch} $(__jmt_prompt_color cyan)${symbol_tracking_branch}  ${upstream/\/${current_branch}/}  "
 
                 if [[ $commits_behind -gt 0 || $commits_ahead -gt 0 ]]; then
                     prompt+="$(__jmt_prompt_color red)${symbol_commits_behind} ${commits_behind} $(__jmt_prompt_color green)${symbol_commits_ahead} ${commits_ahead}  "
                 fi
             fi
 
-            __jmt_prompt_add_to_prompt_if "$has_stashes" $symbol_has_stashes yellow
+            __jmt_prompt_add_to_prompt_if "$has_stashes" $symbol_has_stashes orange
             __jmt_prompt_add_to_prompt_if "$has_modifications" $symbol_has_modifications red
             __jmt_prompt_add_to_prompt_if "$has_adds" $symbol_has_adds red
             __jmt_prompt_add_to_prompt_if "$has_deletions" $symbol_has_deletions red
             __jmt_prompt_add_to_prompt_if "$has_index_changed" $symbol_has_cached_modifications green
             __jmt_prompt_add_to_prompt_if "$tag_at_current_commit" "${symbol_is_on_a_tag} ${tag_at_current_commit} " purple
         fi
-        __jmt_prompt_add_to_prompt_if "$current_action" "${symbol_action} ${current_action}" red
+        __jmt_prompt_add_to_prompt_if "$current_action" "[${current_action}]" red
     fi
 
-    export PS1="\n$(__jmt_prompt_color cyan)\\u $(__jmt_prompt_color green)\\w ${prompt}$(__jmt_prompt_color reset)\n\\\$ "
+    export PS1="\n$(__jmt_prompt_color blue)\\u $(__jmt_prompt_color darkgreen)\\w ${prompt}$(__jmt_prompt_color reset)\n\\\$ "
 }
 
 __jmt_cmd_prompt_git
