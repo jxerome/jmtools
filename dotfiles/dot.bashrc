@@ -34,13 +34,27 @@ function jm() {
     fi
 }
 
-function __jmt_home() {
-    echo "${XDG_DATA_HOME:-$HOME/.local/share}/jmtools"
-}
+if [[ $(uname -s) == "Darwin" ]]; then
 
-function __jmt_config() {
-    echo "${XDG_DATA_HOME:-$HOME/.config}/jmtools"
-}
+    function __jmt_home() {
+        echo "$HOME/jmtools"
+    }
+
+    function __jmt_config() {
+        echo "$HOME/Library/jmtools"
+    }
+
+else 
+
+    function __jmt_home() {
+        echo "${XDG_DATA_HOME:-$HOME/.local/share}/jmtools"
+    }
+
+    function __jmt_config() {
+        echo "${XDG_DATA_HOME:-$HOME/.config}/jmtools"
+    }
+
+fi
 
 function __jmt_debug() {
     set -x

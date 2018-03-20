@@ -1,6 +1,6 @@
 # JAVA
 
-if [[ $(uname) == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]]; then
 
     function __jmt_cmd_java() {
         local version=$1
