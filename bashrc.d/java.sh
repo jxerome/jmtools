@@ -8,7 +8,7 @@ if [[ $(uname -s) == "Darwin" ]]; then
         local java_home
 
         case "$version" in
-            -l)
+            -l|list)
                 $java_home_cmd -V
                 ;;
             6|7|8)
