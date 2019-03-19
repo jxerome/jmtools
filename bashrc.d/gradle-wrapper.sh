@@ -10,7 +10,7 @@ function gw() {
     done
 
     if [[ -x "${project_dir}/gradlew" ]]; then
-        ${project_dir}/gradlew
+        ${project_dir}/gradlew "$@"
     else
         echo "Not in a gradle project" 1>&2 
     fi
