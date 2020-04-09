@@ -4,4 +4,4 @@
 git config --global pull.rebase true
 git config --global push.default simple
 git config --global alias.graph "log --oneline --graph --decorate"
-git config --global alias.lol "log --graph --pretty=format:\"%C(yellow)%h%Creset%C(cyan)%C(bold)%d%Creset %C(cyan)(%cr)%Creset %C(green)%ce%Creset %s\""
+git config --global alias.lol "log --graph --pretty=tformat:\"%C(yellow)%h%Creset%C(cyan)%C(bold)%d%Creset %C(cyan)(%cr)%Creset %C(green)%ae%Creset %s\""
