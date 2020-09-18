@@ -1,0 +1,46 @@
+#!/bin/bash
+
+function main() {
+    local filter
+    local target
+    declare -a instances
+
+    while getopts "e:p:" option; do
+        case $option in
+            e)
+                filter="$filter Name=tag:Environment,Values=$OPTARG"
+                ;;
+            n)
+                filter="$filter Name=tag:Name,Values=$OPTARG"
+                ;;
+            p)
+                filter="$filter Name=tag:Project,Values=$OPTARG"
+                ;;
+        esac
+    done
+
+    if [[ -z $filter ]]; then
+        echo "You should define at least one filter, -e 'environment', -p 'project' or -n 'name'" >&1
+        exit 1
+    fi
+
+    instances=( $(aws ec2 describe-instances --filter $filter --query Reservations[*].Instances[*].InstanceId --output text) )
+
+    case ${#instances[@]} in
+        0)
+            echo "No instance found" >&1
+            exit 1
+            ;;
+        1)
+            target=${instances[0]}
+            echo "Connect to $target"
+            ;;
+        *)
+            echo "Too many (${#instances[@]}) instances found" >&1
+            exit 1
+    esac
+
+    exec aws ssm start-session --target $target
+}
+
+main "$@"
