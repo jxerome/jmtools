@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function main() {
-    local filter
     local target
     declare -a instances
+    local filter="Name=instance-state-name,Values=running"
 
     while getopts "e:p:" option; do
         case $option in
