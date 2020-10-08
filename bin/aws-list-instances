@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function main() {
+    local target
+    declare -a instances
+    local filter="Name=instance-state-name,Values=running"
+
+    while getopts "e:p:" option; do
+        case $option in
+            e)
+                filter="$filter Name=tag:Environment,Values=$OPTARG"
+                ;;
+            n)
+                filter="$filter Name=tag:Name,Values=$OPTARG"
+                ;;
+            p)
+                filter="$filter Name=tag:Project,Values=$OPTARG"
+                ;;
+        esac
+    done
+
+    local query='Reservations[*].Instances[*].{'
+    query="$query$(query_item InstanceId)"
+    query="$query,$(query_item InstanceType)"
+    query="$query,$(query_item PrivateDnsName)"
+    query="$query,$(query_item PublicDnsName)"
+    query="$query,$(query_tag Name)"
+    query="$query,$(query_tag Environment)"
+    query="$query,$(query_tag Project)"
+    query="$query}"
+
+    exec aws ec2 describe-instances  \
+        --filter "$filter" \
+        --query "$query" \
+        --output table
+}
+
+function query_item() {
+    if [[ $# == 2 ]]; then
+        echo "$1:$2"
+    else
+        echo "$1:$1"
+    fi
+}
+
+function query_tag() {
+    echo "T_$1:Tags[?Key=='$1']|[0].Value"
+}
+
+main "$@"
