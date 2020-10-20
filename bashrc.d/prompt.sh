@@ -1,7 +1,7 @@
 # Gestion du prompt.
 # Inspiré par OH My Git !  https://github.com/arialdomartini/oh-my-git
 
-export PROMPT_COMMAND=bash_prompt
+#export PROMPT_COMMAND=bash_prompt
 
 function __jmt_prompt_color() {
     # colors
@@ -167,4 +167,4 @@ function __jmt_prompt_build_git_prompt() {
     export PS1="\n$(__jmt_prompt_color blue)\\u $(__jmt_prompt_color darkgreen)\\w ${prompt}$(__jmt_prompt_color reset)\n\\\$ "
 }
 
-__jmt_cmd_prompt_git
+#__jmt_cmd_prompt_git

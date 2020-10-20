@@ -107,6 +107,10 @@ function __jmt_source_shell_config_file() {
 }
 
 function __jmt_source_shell_config_files() {
+    if which -s starship; then
+        eval "$(starship init bash)"
+    fi
+
     __jmt_source_shell_config_file "$(__jmt_home)"
     __jmt_source_shell_config_file "$(__jmt_config)"
 }
