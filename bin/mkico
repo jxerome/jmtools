@@ -1,0 +1,32 @@
+#!/bin/bash
+
+file=$1
+
+if [[ -z $file ]]; then
+    echo "USAGE: mkico FICHIER" >&1
+    exit 1
+fi
+
+filename="$(basename $file)"
+icon_name="${filename%.*}"
+extension="${filename##*.}"
+
+if [[ $extension != png ]]; then
+    echo "Only PNG can be used" >&1
+    exit 1
+fi
+
+# resize all the images
+sips -z 16 16     "$file" --out "${icon_name}.iconset/icon_16x16.png"
+sips -z 32 32     "$file" --out "${icon_name}.iconset/icon_16x16@2x.png"
+sips -z 32 32     "$file" --out "${icon_name}.iconset/icon_32x32.png"
+sips -z 64 64     "$file" --out "${icon_name}.iconset/icon_32x32@2x.png"
+sips -z 128 128   "$file" --out "${icon_name}.iconset/icon_128x128.png"
+sips -z 256 256   "$file" --out "${icon_name}.iconset/icon_128x128@2x.png"
+sips -z 256 256   "$file" --out "${icon_name}.iconset/icon_256x256.png"
+sips -z 512 512   "$file" --out "${icon_name}.iconset/icon_256x256@2x.png"
+sips -z 512 512   "$file" --out "${icon_name}.iconset/icon_512x512.png"
+
+cp "$file" "${icon_name}.iconset/icon_512x512@2x.png"
+
+iconutil -c icns "${icon_name}.iconset"
