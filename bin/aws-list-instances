@@ -30,7 +30,7 @@ function main() {
     query="$query}"
 
     exec aws ec2 describe-instances  \
-        --filter "$filter" \
+        --filter $filter \
         --query "$query" \
         --output table
 }
