@@ -3,6 +3,5 @@
 # user.name Jérôme Mainaud
 git config set --global pull.rebase true
 git config set --global init.defaultBranch main
-git config set --global push.default simple
 git config set --global alias.graph "log --oneline --graph --decorate"
 git config set --global alias.lol "log --graph --pretty=tformat:'%C(yellow)%h%Creset%C(cyan)%C(bold)%d%Creset %C(cyan)(%cr)%Creset %C(green)%ae%Creset %s'"
